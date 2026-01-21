@@ -4,9 +4,8 @@ export default function Header() {
       display: "flex", 
       alignItems: "center", 
       gap: 16,
-      paddingBottom: 0,
       marginBottom: 20,
-      borderBottom: "1px solid rgba(0, 255, 136, 0.2)",
+      borderBottom: "2px solid rgba(0, 255, 0, 0.3)",
       paddingBottom: 16
     }}>
       <img 
@@ -14,17 +13,17 @@ export default function Header() {
         alt="LOUD" 
         height={50}
         style={{
-          filter: "drop-shadow(0 0 10px rgba(0, 255, 136, 0.5))"
+          filter: "drop-shadow(0 0 10px rgba(0, 255, 0, 0.3))"
         }}
       />
       <h1 style={{ 
         fontSize: 28, 
         fontWeight: 700,
-        color: "#00ff88",
+        color: "#00ff00",
         textTransform: "uppercase",
-        letterSpacing: "2px",
-        textShadow: "0 0 20px rgba(0, 255, 136, 0.6), 0 0 40px rgba(0, 217, 255, 0.3)",
-        fontFamily: "'Space Mono', monospace"
+        letterSpacing: "3px",
+        textShadow: "0 0 20px rgba(0, 255, 0, 0.4)",
+        fontFamily: "'Poppins', sans-serif"
       }}>
         LOUD • MULTISTREAM
       </h1>
