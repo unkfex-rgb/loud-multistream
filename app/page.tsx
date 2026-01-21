@@ -34,15 +34,39 @@ const defaultStreams: Stream[] = [
 export default function Home() {
   const [streams, setStreams] = useState(defaultStreams);
   const [selectedStream, setSelectedStream] = useState(defaultStreams[0].id);
-  const [chatHidden, setChatHidden] = useState(false);
-  const [viewMode, setViewMode] = useState<"focus" | "grid" | "auto">("auto");
+  const [chatHidden, setChatHidden] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('chatHidden') === 'true';
+    }
+    return false;
+  });
+  const [viewMode, setViewMode] = useState<"focus" | "grid" | "auto">(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('viewMode') as "focus" | "grid" | "auto") || "auto";
+    }
+    return "auto";
+  });
   const [popupPinned, setPopupPinned] = useState(false);
   const [popupVisible, setPopupVisible] = useState(true);
   const [platform, setPlatform] = useState("twitch");
   const [menuOpen, setMenuOpen] = useState(false);
-  const [chatWidth, setChatWidth] = useState(350);
+  const [chatWidth, setChatWidth] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return parseInt(localStorage.getItem('chatWidth') || '350');
+    }
+    return 350;
+  });
   const [isResizing, setIsResizing] = useState(false);
   const [theaterMode, setTheaterMode] = useState(false);
+
+  // Salvar configurações no localStorage
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('chatHidden', String(chatHidden));
+      localStorage.setItem('viewMode', viewMode);
+      localStorage.setItem('chatWidth', String(chatWidth));
+    }
+  }, [chatHidden, viewMode, chatWidth]);
 
   // Redimensionamento do chat
   const handleMouseDown = () => {
@@ -322,6 +346,26 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* CLIPES EM DESTAQUE */}
+      <div className="clips-section">
+        <h2 className="clips-title">Clipes em Destaque</h2>
+        <div className="clips-grid">
+          {streams.map((stream) => (
+            <div key={stream.id} className="clip-card">
+              <div className="clip-thumbnail">
+                <div style={{background: 'rgba(0,0,0,0.8)', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px'}}>
+                  <span style={{color: '#888'}}>Clipes em breve</span>
+                </div>
+              </div>
+              <div className="clip-info">
+                <h3>{stream.name}</h3>
+                <p>Clipes populares</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* FOOTER */}
       <footer>

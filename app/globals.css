@@ -1227,6 +1227,69 @@ footer {
   background: rgba(0, 255, 0, 0.6);
 }
 
+/* CLIPES EM DESTAQUE */
+.clips-section {
+  padding: 24px 16px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%);
+  border-top: 2px solid rgba(0, 255, 0, 0.2);
+}
+
+.clips-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #00ff00;
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.clips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.clip-card {
+  background: rgba(21, 21, 21, 0.95);
+  border: 2px solid rgba(0, 255, 0, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.clip-card:hover {
+  border-color: rgba(0, 255, 0, 0.5);
+  box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+.clip-thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
+}
+
+.clip-info {
+  padding: 12px;
+  border-top: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.clip-info h3 {
+  font-size: 12px;
+  font-weight: 700;
+  color: #00ff00;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+}
+
+.clip-info p {
+  font-size: 10px;
+  color: #888888;
+  margin: 0;
+}
+
 /* RESPONSIVE */
 @media (max-width: 1200px) {
   .chat-sidebar {
