@@ -909,6 +909,7 @@ header {
 /* CHAT SIDEBAR */
 .chat-sidebar {
   width: 350px;
+  transition: width 0.05s linear;
   background: rgba(21, 21, 21, 0.95);
   border-left: 2px solid rgba(0, 255, 0, 0.3);
   display: flex;

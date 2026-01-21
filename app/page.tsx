@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import React from "react";
 
 interface Stream {
   id: string;
@@ -39,6 +40,39 @@ export default function Home() {
   const [popupVisible, setPopupVisible] = useState(true);
   const [platform, setPlatform] = useState("twitch");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [chatWidth, setChatWidth] = useState(350);
+  const [isResizing, setIsResizing] = useState(false);
+
+  // Redimensionamento do chat
+  const handleMouseDown = () => {
+    setIsResizing(true);
+  };
+
+  React.useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing) return;
+      e.preventDefault();
+      const newWidth = Math.max(250, Math.min(600, window.innerWidth - e.clientX));
+      setChatWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        document.body.style.cursor = 'auto';
+        document.body.style.userSelect = 'auto';
+      };
+    }
+  }, [isResizing]);
 
   // Detectar domínio para Twitch embed
   const getParentDomain = () => {
@@ -208,7 +242,23 @@ export default function Home() {
 
         {/* CHAT SIDEBAR */}
         {!chatHidden && (
-          <div className="chat-sidebar">
+          <div className="chat-sidebar" style={{ width: `${chatWidth}px`, position: 'relative' }}>
+            <div 
+              onMouseDown={handleMouseDown}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: 0,
+                bottom: 0,
+                width: '4px',
+                cursor: 'col-resize',
+                background: 'rgba(0, 255, 0, 0.2)',
+                zIndex: 100,
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0, 255, 0, 0.6)')}
+              onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0, 255, 0, 0.2)')}
+            />
             <div className="chat-header">
               <span>CHAT - {selectedStreamData?.name.toUpperCase()}</span>
               <button 
