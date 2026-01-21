@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 interface Stream {
   id: string;
@@ -11,456 +11,290 @@ interface Stream {
 
 const defaultStreams: Stream[] = [
   {
-    id: 'loud_coringa',
-    name: 'LOUD Coringa',
-    channel: 'loud_coringa',
-    game: 'Just Chatting',
+    id: "loud_coringa",
+    name: "LOUD Coringa",
+    channel: "loud_coringa",
+    game: "Just Chatting",
   },
   {
-    id: 'loud_brabox',
-    name: 'LOUD Brabox',
-    channel: 'loud_brabox',
-    game: 'Just Chatting',
+    id: "loud_brabox",
+    name: "LOUD Brabox",
+    channel: "loud_brabox",
+    game: "Just Chatting",
   },
   {
-    id: 'gabepeixe',
-    name: 'Gabe Peixe',
-    channel: 'gabepeixe',
-    game: 'Just Chatting',
+    id: "gabepeixe",
+    name: "Gabe Peixe",
+    channel: "gabepeixe",
+    game: "Just Chatting",
   },
 ];
 
 export default function Home() {
+  const [streams, setStreams] = useState(defaultStreams);
   const [selectedStream, setSelectedStream] = useState(defaultStreams[0].id);
   const [chatHidden, setChatHidden] = useState(false);
-  const [viewMode, setViewMode] = useState<'focus' | 'grid' | 'auto'>('auto');
+  const [viewMode, setViewMode] = useState<"focus" | "grid" | "auto">("auto");
   const [popupPinned, setPopupPinned] = useState(false);
   const [popupVisible, setPopupVisible] = useState(true);
+  const [platform, setPlatform] = useState("twitch");
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const selectedStreamData = defaultStreams.find((s) => s.id === selectedStream);
+  const getViewModeClass = () => {
+    if (viewMode === "focus") return "view-focus";
+    if (viewMode === "grid") return "view-grid";
+    return "view-auto";
+  };
+
+  const getChatUrl = (channel: string, plat: string) => {
+    if (plat === "twitch") {
+      return `https://twitch.tv/embed/${channel}/chat`;
+    }
+    return "";
+  };
+
+  const getPlayerUrl = (channel: string, plat: string) => {
+    if (plat === "twitch") {
+      return `https://twitch.tv/embed/${channel}`;
+    }
+    return "";
+  };
+
+  const getStreamUrl = (channel: string, plat: string) => {
+    if (plat === "twitch") {
+      return `https://twitch.tv/${channel}`;
+    }
+    return "";
+  };
+
+  const selectedStreamData = streams.find((s) => s.id === selectedStream);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0a', color: '#fff' }}>
+    <>
+      <div className="background"></div>
+
       {/* HEADER */}
-      <header style={{
-        background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)',
-        padding: '1.5rem 2rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderBottom: '1px solid #2a2a2a',
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <img 
-            src="/logo-loud.png" 
-            alt="LOUD" 
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '12px',
-              objectFit: 'cover',
-            }}
-          />
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>LOUD MULTISTREAM</h1>
-            <p style={{ margin: 0, fontSize: '0.875rem', color: '#00ff00' }}>Streaming Hub</p>
+      <header>
+        <div className="header-left">
+          <img src="/logo-loud.png" alt="LOUD" className="logo" />
+          <div className="header-info">
+            <h1>LOUD MULTISTREAM</h1>
+            <p>Streaming Hub</p>
           </div>
         </div>
 
-        {/* MENU BUTTON */}
-        <div style={{ position: 'relative' }}>
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            onMouseEnter={() => setMenuOpen(true)}
-            onMouseLeave={() => setMenuOpen(false)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#00ff00',
-              cursor: 'pointer',
-              fontSize: '1.5rem',
-              padding: '0.5rem',
-            }}
-          >
-            ⚙️
+        {/* CONTROLS MENU */}
+        <div 
+          className={`controls-menu ${menuOpen ? "open" : ""} ${popupPinned ? "pinned" : ""}`}
+          onMouseEnter={() => !popupPinned && setMenuOpen(true)}
+          onMouseLeave={() => !popupPinned && setMenuOpen(false)}
+        >
+          <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
           </button>
 
-          {/* DROPDOWN MENU */}
-          {menuOpen && (
-            <div
-              onMouseEnter={() => setMenuOpen(true)}
-              onMouseLeave={() => setMenuOpen(false)}
-              style={{
-                position: 'absolute',
-                top: '60px',
-                right: 0,
-                background: '#1a1a1a',
-                border: '1px solid #2a2a2a',
-                borderRadius: '12px',
-                minWidth: '200px',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
-                zIndex: 200,
-              }}
+          <div className="menu-dropdown">
+            <button 
+              className={`menu-item ${chatHidden ? "active" : ""}`}
+              onClick={() => setChatHidden(!chatHidden)}
+              title="Chat"
             >
-              <button
-                onClick={() => { setChatHidden(!chatHidden); setMenuOpen(false); }}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: 'none',
-                  background: chatHidden ? 'rgba(0, 255, 0, 0.2)' : 'none',
-                  color: chatHidden ? '#00ff00' : '#fff',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontSize: '0.95rem',
-                }}
-              >
-                💬 Chat
-              </button>
-              <button
-                onClick={() => { setViewMode('focus'); setMenuOpen(false); }}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: 'none',
-                  background: viewMode === 'focus' ? 'rgba(0, 255, 0, 0.2)' : 'none',
-                  color: viewMode === 'focus' ? '#00ff00' : '#fff',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontSize: '0.95rem',
-                }}
-              >
-                🎯 Foco
-              </button>
-              <button
-                onClick={() => { setViewMode('grid'); setMenuOpen(false); }}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: 'none',
-                  background: viewMode === 'grid' ? 'rgba(0, 255, 0, 0.2)' : 'none',
-                  color: viewMode === 'grid' ? '#00ff00' : '#fff',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontSize: '0.95rem',
-                }}
-              >
-                📊 Grade
-              </button>
-              <button
-                onClick={() => { setViewMode('auto'); setMenuOpen(false); }}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: 'none',
-                  background: viewMode === 'auto' ? 'rgba(0, 255, 0, 0.2)' : 'none',
-                  color: viewMode === 'auto' ? '#00ff00' : '#fff',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontSize: '0.95rem',
-                }}
-              >
-                ⚙️ Auto
-              </button>
-              <button
-                onClick={() => { setPopupPinned(!popupPinned); setMenuOpen(false); }}
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  border: 'none',
-                  background: popupPinned ? 'rgba(0, 255, 0, 0.2)' : 'none',
-                  color: popupPinned ? '#00ff00' : '#fff',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  fontSize: '0.95rem',
-                }}
-              >
-                📌 Fixar
-              </button>
-            </div>
-          )}
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+              </svg>
+              <span>Chat</span>
+            </button>
+
+            <button 
+              className={`menu-item ${viewMode === "focus" ? "active" : ""}`}
+              onClick={() => setViewMode(viewMode === "focus" ? "auto" : "focus")}
+              title="Foco"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12 4c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8 3.59-8 8-8m0-2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+              </svg>
+              <span>Foco</span>
+            </button>
+
+            <button 
+              className={`menu-item ${viewMode === "grid" ? "active" : ""}`}
+              onClick={() => setViewMode(viewMode === "grid" ? "auto" : "grid")}
+              title="Grade"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/>
+              </svg>
+              <span>Grade</span>
+            </button>
+
+            <button 
+              className={`menu-item ${viewMode === "auto" ? "active" : ""}`}
+              onClick={() => setViewMode("auto")}
+              title="Automático"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0-7C6.48 1 2 5.48 2 12s4.48 11 10 11 10-4.48 10-10S17.52 1 12 1zm0 20c-4.97 0-9-4.03-9-9s4.03-9 9-9 9 4.03 9 9-4.03 9-9 9z"/>
+              </svg>
+              <span>Auto</span>
+            </button>
+
+            <button 
+              className={`menu-item ${popupPinned ? "active" : ""}`}
+              onClick={() => setPopupPinned(!popupPinned)}
+              title="Fixar"
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+              </svg>
+              <span>Fixar</span>
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* MAIN CONTAINER */}
-      <div style={{
-        display: 'flex',
-        height: 'calc(100vh - 80px)',
-        gap: '1rem',
-        padding: '1rem',
-      }}>
-        {/* STREAMS SECTION */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {/* STREAM GRID */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: viewMode === 'focus' ? '1fr' : viewMode === 'grid' ? 'repeat(3, 1fr)' : 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '1rem',
-            flex: 1,
-          }}>
-            {defaultStreams.map((stream) => (
-              <div
-                key={stream.id}
-                onClick={() => setSelectedStream(stream.id)}
-                style={{
-                  position: 'relative',
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  background: '#1a1a1a',
-                  border: selectedStream === stream.id ? '2px solid #00ff00' : '2px solid #2a2a2a',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  minHeight: '300px',
-                }}
-              >
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  background: '#ff0000',
-                  color: 'white',
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  zIndex: 10,
-                }}>
-                  LIVE
-                </div>
-
+      {/* MAIN CONTENT */}
+      <div className="main-content">
+        {/* STREAMS GRID */}
+        <div className={`streams-container ${getViewModeClass()}`}>
+          {streams.map((stream) => (
+            <div 
+              key={stream.id} 
+              className={`stream-card ${selectedStream === stream.id ? "selected" : ""}`}
+              onClick={() => setSelectedStream(stream.id)}
+            >
+              <div className="live-badge">LIVE</div>
+              <div className="stream-player">
                 <iframe
-                  src={`https://twitch.tv/embed/${stream.channel}`}
+                  src={getPlayerUrl(stream.channel, platform)}
                   height="100%"
                   width="100%"
-                  allowFullScreen
+                  allowFullScreen={true}
                   title={`${stream.name} Stream`}
-                  style={{ border: 'none' }}
                 ></iframe>
-
-                <div style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  background: 'linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent)',
-                  padding: '20px 12px 12px',
-                  color: 'white',
-                }}>
-                  <div style={{ fontWeight: 600, fontSize: '1rem', marginBottom: '4px' }}>
-                    {stream.name}
-                  </div>
-                  <div style={{ fontSize: '0.875rem', color: '#a0a0a0' }}>
-                    {stream.game}
-                  </div>
+              </div>
+              <div className="stream-info">
+                <div className="stream-details">
+                  <div className="stream-name">{stream.name}</div>
+                  <div className="stream-game">{stream.game}</div>
+                </div>
+                <div className="stream-controls">
+                  <button 
+                    className="stream-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(getStreamUrl(stream.channel, platform), "_blank");
+                    }}
+                    title="Abrir no Twitch"
+                  >
+                    🔗
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         {/* CHAT SIDEBAR */}
         {!chatHidden && (
-          <div style={{
-            width: '350px',
-            background: '#1a1a1a',
-            borderRadius: '16px',
-            border: '1px solid #2a2a2a',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            <div style={{
-              background: 'linear-gradient(135deg, #00ff00 0%, #00cc00 100%)',
-              color: '#000',
-              padding: '1rem',
-              fontWeight: 700,
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
-              CHAT - {selectedStreamData?.name}
-              <button
+          <div className="chat-sidebar">
+            <div className="chat-header">
+              <span>CHAT - {selectedStreamData?.name.toUpperCase()}</span>
+              <button 
+                className="chat-close"
                 onClick={() => setChatHidden(true)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#000',
-                  cursor: 'pointer',
-                  fontSize: '1.25rem',
-                }}
               >
                 ✕
               </button>
             </div>
-            <div style={{ flex: 1, overflow: 'hidden' }}>
+            {selectedStreamData && (
               <iframe
-                src={`https://twitch.tv/embed/${selectedStreamData?.channel}/chat`}
-                height="100%"
-                width="100%"
-                title={`${selectedStreamData?.name} Chat`}
-                style={{ border: 'none' }}
+                className="chat-iframe"
+                src={getChatUrl(selectedStreamData.channel, platform)}
+                frameBorder="0"
+                scrolling="yes"
+                allowFullScreen={true}
               ></iframe>
-            </div>
+            )}
           </div>
         )}
       </div>
 
+      {/* FOCUS MODE SELECTOR */}
+      {viewMode === "focus" && (
+        <div className="focus-selector-bar">
+          <span className="selector-label">Selecione o streamer:</span>
+          <div className="selector-buttons">
+            {streams.map((stream) => (
+              <button
+                key={stream.id}
+                className={`selector-btn ${selectedStream === stream.id ? "active" : ""}`}
+                onClick={() => setSelectedStream(stream.id)}
+              >
+                {stream.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* FLOATING POPUP */}
       {popupVisible && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            background: '#1a1a1a',
-            border: '1px solid #2a2a2a',
-            borderRadius: '16px',
-            padding: '1.5rem',
-            maxWidth: '300px',
-            boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
-            zIndex: 50,
-            opacity: popupPinned ? 0.3 : 1,
-            transition: 'opacity 0.3s ease',
-          }}
-          onMouseEnter={(e) => {
-            if (popupPinned) {
-              (e.currentTarget as HTMLElement).style.opacity = '1';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (popupPinned) {
-              (e.currentTarget as HTMLElement).style.opacity = '0.3';
-            }
-          }}
+        <div className={`floating-popup ${popupPinned ? "pinned" : ""}`}
+          onMouseEnter={() => popupPinned && setMenuOpen(true)}
+          onMouseLeave={() => popupPinned && setMenuOpen(false)}
         >
-          <button
-            onClick={() => setPopupVisible(false)}
-            style={{
-              position: 'absolute',
-              top: '12px',
-              right: '12px',
-              background: 'none',
-              border: 'none',
-              color: '#a0a0a0',
-              cursor: 'pointer',
-              fontSize: '1.25rem',
-            }}
-          >
-            ✕
-          </button>
-          <div style={{ color: '#00ff00', fontWeight: 700, marginBottom: '0.5rem', fontSize: '1.125rem' }}>
-            LOUD MULTISTREAM
+          <div className="popup-header">
+            <span className="popup-title">LOUD MULTISTREAM</span>
+            <button 
+              className="popup-close"
+              onClick={() => setPopupVisible(false)}
+            >
+              ✕
+            </button>
           </div>
-          <div style={{ color: '#a0a0a0', fontSize: '0.875rem', lineHeight: 1.5 }}>
-            Bem-vindo ao LOUD Multistream! Acompanhe os streamers da LOUD em tempo real. Use o menu de controles para alternar entre diferentes modos de exibição ou ocultar o chat.
+          <div className="popup-content">
+            <p>Bem-vindo ao LOUD Multistream!</p>
+            <p>Acompanhe os streamers da LOUD em tempo real.</p>
+            <p>Use o menu de controles para alternar entre diferentes modos de exibição ou ocultar o chat.</p>
           </div>
         </div>
       )}
 
       {/* FOOTER */}
-      <footer style={{
-        background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%)',
-        padding: '2rem',
-        textAlign: 'center',
-        borderTop: '1px solid #2a2a2a',
-        position: 'relative',
-      }}>
-        <div style={{
-          color: '#a0a0a0',
-          fontSize: '0.95rem',
-          cursor: 'pointer',
-          position: 'relative',
-          display: 'inline-block',
-        }}>
-          Dev by: Corintia420
-          <div style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: '#1a1a1a',
-            border: '1px solid #2a2a2a',
-            borderRadius: '12px',
-            padding: '12px',
-            display: 'flex',
-            gap: '12px',
-            marginBottom: '10px',
-            opacity: 0,
-            pointerEvents: 'none',
-            transition: 'all 0.3s ease',
-          }}
-          className="social-popup"
-          >
-            <a
-              href="https://instagram.com/corintia420"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '8px',
-                background: 'rgba(0, 255, 0, 0.1)',
-                border: '1px solid #00ff00',
-                color: '#00ff00',
-                textDecoration: 'none',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = '#00ff00';
-                (e.currentTarget as HTMLElement).style.color = '#000';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(0, 255, 0, 0.1)';
-                (e.currentTarget as HTMLElement).style.color = '#00ff00';
-              }}
-            >
-              📷
-            </a>
-            <a
-              href="https://twitch.tv/corintia420"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                width: '40px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '8px',
-                background: 'rgba(0, 255, 0, 0.1)',
-                border: '1px solid #00ff00',
-                color: '#00ff00',
-                textDecoration: 'none',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = '#00ff00';
-                (e.currentTarget as HTMLElement).style.color = '#000';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(0, 255, 0, 0.1)';
-                (e.currentTarget as HTMLElement).style.color = '#00ff00';
-              }}
-            >
-              📺
-            </a>
+      <footer>
+        <div className="footer-left">
+          <div className="dev-credit-container">
+            <span className="dev-credit">Dev by: <strong>Corintia420</strong></span>
+            <div className="social-popup">
+              <a 
+                href="https://instagram.com/corintia420" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="social-link instagram"
+                title="Instagram"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.266.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073z"/>
+                </svg>
+              </a>
+              <a 
+                href="https://twitch.tv/corintia420" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="social-link twitch"
+                title="Twitch"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M2.149 0l-1.612 4.823v16.815h5.849v3.529h3.848l3.627-3.529h5.236l6.923-7.231V0H2.149zm16.994 13.601h-4.281l-2.557 2.64v-2.64h-4.281V2.754h11.119v10.847z"/>
+                  <path d="M11.11 5.338H9.481v6.313h1.629V5.338zm4.358 0h-1.629v6.313h1.629V5.338z"/>
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
       </footer>
-
-      <style>{`
-        footer > div:hover .social-popup {
-          opacity: 1;
-          pointer-events: auto;
-        }
-      `}</style>
-    </div>
+    </>
   );
 }
