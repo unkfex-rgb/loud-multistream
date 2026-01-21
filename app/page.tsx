@@ -42,6 +42,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatWidth, setChatWidth] = useState(350);
   const [isResizing, setIsResizing] = useState(false);
+  const [theaterMode, setTheaterMode] = useState(false);
 
   // Redimensionamento do chat
   const handleMouseDown = () => {
