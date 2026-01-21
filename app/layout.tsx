@@ -1,14 +1,13 @@
 
 import "./globals.css";
-import React from "react";
 
 export const metadata = {
   title: "LOUD Multistream",
-  description: "O caminho até Las Vegas"
+  description: "Acompanhe as lives da LOUD em tempo real",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
