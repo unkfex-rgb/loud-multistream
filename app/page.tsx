@@ -40,6 +40,16 @@ export default function Home() {
   const [platform, setPlatform] = useState("twitch");
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Detectar domínio para Twitch embed
+  const getParentDomain = () => {
+    if (typeof window !== 'undefined') {
+      return window.location.hostname;
+    }
+    return 'localhost';
+  };
+
+  const parentDomain = getParentDomain();
+
   const getViewModeClass = () => {
     if (viewMode === "focus") return "view-focus";
     if (viewMode === "grid") return "view-grid";
@@ -48,14 +58,14 @@ export default function Home() {
 
   const getChatUrl = (channel: string, plat: string) => {
     if (plat === "twitch") {
-      return `https://twitch.tv/embed/${channel}/chat`;
+      return `https://twitch.tv/embed/${channel}/chat?parent=${parentDomain}`;
     }
     return "";
   };
 
   const getPlayerUrl = (channel: string, plat: string) => {
     if (plat === "twitch") {
-      return `https://twitch.tv/embed/${channel}`;
+      return `https://twitch.tv/embed/${channel}?parent=${parentDomain}`;
     }
     return "";
   };
